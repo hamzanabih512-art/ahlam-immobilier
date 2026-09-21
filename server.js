@@ -9,8 +9,8 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
-const DATA_DIR = path.join(ROOT, 'data');
-const UPLOAD_DIR = path.join(ROOT, 'uploads');
+const DATA_DIR = path.join('/tmp', 'data');
+const UPLOAD_DIR = path.join('/tmp', 'uploads');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 const SECRET = process.env.JWT_SECRET || 'change-this-secret-before-production';
 
