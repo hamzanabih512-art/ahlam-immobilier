@@ -1,0 +1,139 @@
+{
+  "settings": {
+    "siteName": "Ahlam Immobilier",
+    "tagline": "Des biens, des projets, une seule adresse.",
+    "phone": "+212 6 00 00 00 00",
+    "whatsapp": "212600000000",
+    "email": "contact@ahlam-immobilier.ma",
+    "city": "Tanger • Tétouan • Nord du Maroc",
+    "heroTitle": "Trouvez votre prochain chez-vous",
+    "heroText": "Découvrez nos résidences, appartements et opportunités immobilières sélectionnées dans le Nord du Maroc.",
+    "logoText": "A",
+    "logoImage": "",
+    "primaryColor": "#173B4A"
+  },
+  "projects": [
+    {
+      "id": "p1",
+      "name": "Résidence Al Bahja",
+      "city": "Tanger",
+      "neighborhood": "Malabata",
+      "status": "Disponible",
+      "type": "Résidence",
+      "description": "Une résidence moderne proche des commodités, pensée pour une vie confortable.",
+      "priceFrom": 890000,
+      "areaFrom": 78,
+      "bedroomsFrom": 2,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1400&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1400&q=85"
+      ]
+    },
+    {
+      "id": "p2",
+      "name": "Les Jardins de Tétouan",
+      "city": "Tétouan",
+      "neighborhood": "Centre",
+      "status": "Nouveauté",
+      "type": "Résidence",
+      "description": "Des appartements lumineux avec une architecture contemporaine et des espaces agréables.",
+      "priceFrom": 620000,
+      "areaFrom": 64,
+      "bedroomsFrom": 2,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85"
+      ]
+    },
+    {
+      "id": "p3",
+      "name": "Cap Spartel Villas",
+      "city": "Tanger",
+      "neighborhood": "Cap Spartel",
+      "status": "Sur plan",
+      "type": "Villas",
+      "description": "Un programme résidentiel premium dans un environnement privilégié.",
+      "priceFrom": 1850000,
+      "areaFrom": 180,
+      "bedroomsFrom": 4,
+      "featured": true,
+      "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
+      "images": [
+        "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85"
+      ]
+    }
+  ],
+  "units": [
+    {
+      "id": "u1",
+      "projectId": "p1",
+      "ref": "A101",
+      "title": "Appartement 2 chambres",
+      "type": "Appartement",
+      "floor": 1,
+      "area": 82,
+      "bedrooms": 2,
+      "bathrooms": 1,
+      "price": 890000,
+      "status": "Disponible",
+      "image": "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1600607688969-a5bfcd646154?auto=format&fit=crop&w=1000&q=80"
+      ]
+    },
+    {
+      "id": "u2",
+      "projectId": "p1",
+      "ref": "B203",
+      "title": "Appartement 3 chambres",
+      "type": "Appartement",
+      "floor": 2,
+      "area": 112,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "price": 1180000,
+      "status": "Disponible",
+      "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1000&q=80"
+      ]
+    },
+    {
+      "id": "u3",
+      "projectId": "p2",
+      "ref": "C104",
+      "title": "Appartement familial",
+      "type": "Appartement",
+      "floor": 1,
+      "area": 95,
+      "bedrooms": 3,
+      "bathrooms": 2,
+      "price": 790000,
+      "status": "Réservé",
+      "image": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1000&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1000&q=80"
+      ]
+    },
+    {
+      "id": "u4",
+      "projectId": "p3",
+      "ref": "V01",
+      "title": "Villa 4 chambres",
+      "type": "Villa",
+      "floor": 0,
+      "area": 210,
+      "bedrooms": 4,
+      "bathrooms": 3,
+      "price": 2150000,
+      "status": "Disponible",
+      "image": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1000&q=80",
+      "images": [
+        "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1000&q=80"
+      ]
+    }
+  ],
+  "inquiries": []
+}
