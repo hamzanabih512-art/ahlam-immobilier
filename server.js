@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const multer = require('multer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
+const { createClient } = require('@supabase/supabase-js');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
@@ -22,7 +22,7 @@ const initialDb = {
   settings: {
     siteName: 'Ahlam Immobilier', tagline: 'Des biens, des projets, une seule adresse.',
     phone: '+212 6 00 00 00 00', whatsapp: '212600000000', email: 'contact@ahlam-immobilier.ma',
-    city: 'Tanger • Tétouan • Nord du Maroc', heroTitle: 'Trouvez votre prochain chez-vous',
+    hity: 'Tanger • Tétouan • Nord du Maroc', heroTitle: 'Trouvez votre prochain chez-vous',
     heroText: 'Découvrez nos résidences, appartements et opportunités immobilières sélectionnées dans le Nord du Maroc.',
     logoText: 'A', logoImage: '', primaryColor: '#173B4A'
   },
