@@ -1,4 +1,5 @@
 const express = require('express');
+require('dotenv').config();
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
@@ -6,6 +7,7 @@ const multer = require('multer');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { createClient } = require('@supabase/supabase-js');
+const WebSocket = require('ws');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
@@ -14,6 +16,18 @@ const UPLOAD_DIR = path.join('/tmp', 'uploads');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 const SECRET = process.env.JWT_SECRET || 'change-this-secret-before-production';
 
+
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SECRET_KEY,
+  {
+    realtime: {
+      transport: WebSocket
+    }
+  }
+);
+
+fs.mkdirSync(DATA_DIR, { recursive: true });
 fs.mkdirSync(DATA_DIR, { recursive: true });
 fs.mkdirSync(UPLOAD_DIR, { recursive: true });
 
@@ -41,8 +55,44 @@ const initialDb = {
 };
 
 if (!fs.existsSync(DB_FILE)) fs.writeFileSync(DB_FILE, JSON.stringify(initialDb, null, 2));
-function readDb(){ return JSON.parse(fs.readFileSync(DB_FILE,'utf8')); }
-function writeDb(db){ fs.writeFileSync(DB_FILE, JSON.stringify(db,null,2)); }
+let dbCache = JSON.parse(fs.readFileSync(DB_FILE,'utf8'));
+async function loadDbFromSupabase(){
+  const {data,error}=await supabase
+    .from('app_state')
+    .select('data')
+    .eq('id','main')
+    .maybeSingle();
+
+  if(error){
+    console.error('Supabase load error:',error.message);
+    return;
+  }
+
+  if(data?.data && Object.keys(data.data).length){
+    dbCache=data.data;
+    fs.writeFileSync(DB_FILE,JSON.stringify(dbCache,null,2));
+  }
+}
+
+function readDb(){
+  return dbCache;
+}
+
+function writeDb(db){
+  dbCache = db;
+  fs.writeFileSync(DB_FILE, JSON.stringify(db,null,2));
+
+  supabase
+    .from('app_state')
+    .upsert({
+      id: 'main',
+      data: db
+    })
+    .then(({ error }) => {
+      if (error) console.error('Supabase save error:', error.message);
+    });
+}
+
 function id(prefix='id'){ return prefix+'_'+Date.now().toString(36)+Math.random().toString(36).slice(2,8); }
 function auth(req,res,next){
   const token=(req.headers.authorization||'').replace(/^Bearer\s+/,'');
@@ -57,13 +107,9 @@ function normalizeEntity(obj){
   return {...obj, images, image: images[0]||''};
 }
 
-const storage=multer.diskStorage({
-  destination:(_,__,cb)=>cb(null,UPLOAD_DIR),
-  filename:(_,file,cb)=>{
-    const ext=path.extname(file.originalname).toLowerCase();
-    cb(null,crypto.randomBytes(10).toString('hex')+ext);
-  }
-});
+const storage = multer.memoryStorage();
+                                  
+
 const allowed=new Set(['image/jpeg','image/png','image/webp','image/svg+xml']);
 const upload=multer({
   storage,
@@ -112,8 +158,41 @@ app.delete('/api/admin/units/:id',auth,(req,res)=>{ const db=readDb();db.units=d
 app.post('/api/inquiries',(req,res)=>{ const {name,phone,email,message,unitId}=req.body||{};if(!name||!phone)return res.status(400).json({error:'Nom et téléphone requis'});const db=readDb();db.inquiries.unshift({id:id('i'),createdAt:new Date().toISOString(),name:String(name).slice(0,120),phone:String(phone).slice(0,60),email:String(email||'').slice(0,160),message:String(message||'').slice(0,2000),unitId:unitId||''});writeDb(db);res.json({ok:true}); });
 app.delete('/api/admin/inquiries/:id',auth,(req,res)=>{ const db=readDb();db.inquiries=db.inquiries.filter(x=>x.id!==req.params.id);writeDb(db);res.json({ok:true}); });
 
-app.post('/api/admin/upload',auth,upload.array('images',30),(req,res)=>{ if(!req.files?.length)return res.status(400).json({error:'Aucune image valide'});res.json({urls:req.files.map(f=>'/uploads/'+f.filename)}); });
+app.post('/api/admin/upload',auth,upload.array('images',30),async(req,res)=>{
+  if(!req.files?.length)return res.status(400).json({error:'Aucune image valide'});
+
+  try{
+    const urls=[];
+
+    for(const file of req.files){
+      const ext=path.extname(file.originalname).toLowerCase();
+      const filename=crypto.randomBytes(10).toString('hex')+ext;
+
+      const {error}=await supabase.storage
+        .from('uploads')
+        .upload(filename,file.buffer,{
+          contentType:file.mimetype,
+          upsert:false
+        });
+
+      if(error) throw error;
+
+      const {data}=supabase.storage
+        .from('uploads')
+        .getPublicUrl(filename);
+
+      urls.push(data.publicUrl);
+    }
+
+    res.json({urls});
+  }catch(error){
+    console.error('Supabase upload error:',error.message);
+    res.status(500).json({error:'Erreur lors du téléchargement de l’image'});
+  }
+});
 app.delete('/api/admin/uploads',auth,(req,res)=>{ const urls=Array.isArray(req.body?.urls)?req.body.urls:[];for(const u of urls){if(typeof u!=='string'||!u.startsWith('/uploads/'))continue;const name=path.basename(u);const file=path.join(UPLOAD_DIR,name);if(fs.existsSync(file))try{fs.unlinkSync(file)}catch{}}res.json({ok:true}); });
 
 app.get('*',(req,res)=>res.sendFile(path.join(ROOT,'public','index.html')));
-app.listen(PORT,()=>console.log(`Site prêt sur http://localhost:${PORT}`));
+loadDbFromSupabase()
+  .catch(err=>console.error('Supabase init error:',err.message))
+  .finally(()=>app.listen(PORT,()=>console.log(`Site prêt sur http://localhost:${PORT}`)));
